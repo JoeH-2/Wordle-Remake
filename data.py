@@ -1,0 +1,108 @@
+from cryptography.fernet import Fernet
+import json
+import os
+
+data = {
+    "coins" : 0,
+    "wordle_basic" : {
+        # word length
+        3 : {
+            "streak" : 0
+        },
+        4 : {
+            "streak" : 0
+        },
+        5 : {
+            "streak" : 0
+        },
+        6 : {
+            "streak" : 0
+        },
+        7 : {
+            "streak" : 0
+        },
+        8 : {
+            "streak" : 0
+        },
+        9 : {
+            "streak" : 0
+        },
+        10 : {
+            "streak" : 0
+        },
+        11 : {
+            "streak" : 0
+        },
+        12 : {
+            "streak" : 0
+        }
+    }
+}
+
+profile_data = None
+
+with open("profile.json", "r") as profile_f:
+    profile_data = json.loads(profile_f.read())
+
+
+def encrypt_data():
+    # save key
+    key = Fernet.generate_key()
+    with open("filekey.key", "wb") as f:
+        f.write(key)
+
+    fernet = Fernet(key)
+
+    # read in binary
+    with open("data.json", 'rb') as json_f:
+        binary_data = json_f.read()
+
+    # encrypt
+    encrypted_data = fernet.encrypt(binary_data)
+
+    # replace data
+    with open("data.json", "wb") as json_f:
+        json_f.write(encrypted_data)
+
+
+def load_data():
+    global data
+    data_presence_check()
+    # load key
+    with open("filekey.key", "rb") as key_f:
+        key = key_f.read()
+
+    fernet = Fernet(key)
+
+    # read encrypted data
+    with open("data.json", "rb") as json_f:
+        encrypted_data = json_f.read()
+
+    # decrypt
+    decrypted_data = fernet.decrypt(encrypted_data).decode("utf-8") 
+
+    # parse decrypted json into dictionary
+    data = json.loads(decrypted_data)
+
+
+def save_data():
+    data_presence_check()
+    # write dict to json
+    json_data = json.dumps(data)
+    with open("data.json", "wb") as json_f:
+        json_f.write(json_data.encode("utf-8"))
+
+    encrypt_data()
+
+
+def data_presence_check():
+    # check if file exists
+    if not (os.path.exists("data.json")):
+        json_data = json.dumps(data)
+        with open("data.json", "wb") as json_f:
+            json_f.write(json_data.encode("utf-8"))
+
+        encrypt_data()
+
+
+data_presence_check()
