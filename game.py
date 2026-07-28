@@ -100,6 +100,9 @@ class WordleSelectionFrame(CustomFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master)
 
+        # load wordle basic data
+        data.load_profile("wordle_basic")
+
         # custom vars
         self.word_length = 3
 
@@ -123,10 +126,72 @@ class WordleSelectionFrame(CustomFrame):
         self.play_btn.grid(row=4, column=0, columnspan = 3, padx=10, pady=10)
 
         # word selection
+        self.word_types_lbl = customtkinter.CTkLabel(self, text="Word Types", font = ("Roboto", subtitle_size))
+        self.word_types_lbl.grid(row=5, column = 0, columnspan=3, pady=(25, 5))
 
-        acronyms_val = customtkinter.StringVar(value=data.profile_data["wordle_basic"]["acronyms"])
-        self.acronyms_switch = customtkinter.CTkSwitch(self, switch_width=switch_size, switch_height=switch_size, text="Acronyms", font=() variable=acronyms_val, onvalue=True, offvalue=False)
-        self.acronyms_switch.grid(row=5, column=0, columnspan=3, sticky="nesw")
+        # acronyms
+        self.acronyms_val = customtkinter.Variable(value=data.profile_data["wordle_basic"]["acronyms"])
+        self.acronyms_switch = customtkinter.CTkSwitch(self, switch_width=switch_size, switch_height=switch_size /2,
+                                                       text="Acronyms", font=("Roboto", popup_text_size),
+                                                       variable=self.acronyms_val, onvalue=True, offvalue=False,
+                                                       command=lambda: data.update_profile("acronyms", self.acronyms_switch.get()))
+        self.acronyms_switch.grid(row=6, column=1, sticky="nesw", pady=5)
+
+        # adverbs
+        self.adverbs_val = customtkinter.Variable(value=data.profile_data["wordle_basic"]["adverbs"])
+        self.adverbs_switch = customtkinter.CTkSwitch(self, switch_width=switch_size, switch_height=switch_size /2,
+                                                       text="Adverbs", font=("Roboto", popup_text_size),
+                                                       variable=self.adverbs_val, onvalue=True, offvalue=False,
+                                                       command=lambda: data.update_profile("adverbs", self.adverbs_switch.get()))
+        self.adverbs_switch.grid(row=7, column=1, sticky="nesw", pady=5)
+
+        # adjectives
+        self.adjectives_val = customtkinter.Variable(value=data.profile_data["wordle_basic"]["adjectives"])
+        self.adjectives_switch = customtkinter.CTkSwitch(self, switch_width=switch_size, switch_height=switch_size /2,
+                                                       text="Adjectives", font=("Roboto", popup_text_size),
+                                                       variable=self.adjectives_val, onvalue=True, offvalue=False,
+                                                       command=lambda: data.update_profile("adjectives", self.adjectives_switch.get()))
+        self.adjectives_switch.grid(row=7, column=1, sticky="nesw", pady=5)
+
+        # nouns
+        self.nouns_val = customtkinter.Variable(value=data.profile_data["wordle_basic"]["nouns"])
+        self.nouns_switch = customtkinter.CTkSwitch(self, switch_width=switch_size, switch_height=switch_size /2,
+                                                       text="Nouns", font=("Roboto", popup_text_size),
+                                                       variable=self.nouns_val, onvalue=True, offvalue=False,
+                                                       command=lambda: data.update_profile("nouns", self.nouns_switch.get()))
+        self.nouns_switch.grid(row=7, column=1, sticky="nesw", pady=5)
+
+        # singulars
+        self.singulars_val = customtkinter.Variable(value=data.profile_data["wordle_basic"]["singulars"])
+        self.singulars_switch = customtkinter.CTkSwitch(self, switch_width=switch_size, switch_height=switch_size /2,
+                                                       text="Singulars", font=("Roboto", popup_text_size),
+                                                       variable=self.singulars_val, onvalue=True, offvalue=False,
+                                                       command=lambda: data.update_profile("singulars", self.singulars_switch.get()))
+        self.singulars_switch.grid(row=7, column=1, sticky="nesw", pady=5)
+
+        # verbs
+        self.verbs_val = customtkinter.Variable(value=data.profile_data["wordle_basic"]["verbs"])
+        self.verbs_switch = customtkinter.CTkSwitch(self, switch_width=switch_size, switch_height=switch_size /2,
+                                                       text="Verbs", font=("Roboto", popup_text_size),
+                                                       variable=self.verbs_val, onvalue=True, offvalue=False,
+                                                       command=lambda: data.update_profile("verbs", self.verbs_switch.get()))
+        self.verbs_switch.grid(row=7, column=1, sticky="nesw", pady=5)
+
+        # british_english
+        self.british_english_val = customtkinter.Variable(value=data.profile_data["wordle_basic"]["british_english"])
+        self.british_english_switch = customtkinter.CTkSwitch(self, switch_width=switch_size, switch_height=switch_size /2,
+                                                       text="British English", font=("Roboto", popup_text_size),
+                                                       variable=self.british_english_val, onvalue=True, offvalue=False,
+                                                       command=lambda: data.update_profile("british_english", self.british_english_switch.get()))
+        self.british_english_switch.grid(row=7, column=1, sticky="nesw", pady=5)
+
+        # american_english
+        self.american_english_val = customtkinter.Variable(value=data.profile_data["wordle_basic"]["american_english"])
+        self.american_english_switch = customtkinter.CTkSwitch(self, switch_width=switch_size, switch_height=switch_size /2,
+                                                       text="American English", font=("Roboto", popup_text_size),
+                                                       variable=self.american_english_val, onvalue=True, offvalue=False,
+                                                       command=lambda: data.update_profile("american_english", self.american_english_switch.get()))
+        self.american_english_switch.grid(row=7, column=1, sticky="nesw", pady=5)
 
         self.update_padding(3)
 

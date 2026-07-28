@@ -11,7 +11,7 @@ app_height = screen_height
 # - Letter Overview -
 overview_letter_size = int(app_height / 35)
 # - switches -
-switch_size = int(app_height / 25)
+switch_size = int(app_height / 20)
 
 # text styles
 # - Title -

@@ -1,12 +1,1 @@
-{
-    "wordle_basic": {
-        "acronyms" : true,
-        "adverbs" : true,
-        "adjectives" : true,
-        "nouns" : true,
-        "singulars" : true,
-        "verbs" : true,
-        "british_english" : true,
-        "american_english" : true
-    }
-}
+{"wordle_basic": {"acronyms": false, "adverbs": false, "adjectives": true, "nouns": true, "singulars": true, "verbs": true, "british_english": true, "american_english": true, "wordle_basic": "acronyms"}}
