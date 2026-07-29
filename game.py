@@ -2,7 +2,7 @@ import customtkinter
 import random
 import data
 import time
-from word_list_generator import * 
+import word_list_generator as word_list 
 from config import *
 
 customtkinter.set_default_color_theme("colour_theme.json")
@@ -116,41 +116,34 @@ class WordleSelectionFrame(CustomFrame):
         self.word_length_label = customtkinter.CTkLabel(self, text=3, font=("Roboto", popup_text_size))
         self.word_length_label.grid(row=3, column=1, padx=5)
 
-        self.length_decrease_btn = customtkinter.CTkButton(self, width=btn_text_size + 20, height=btn_text_size + 15, text="<", font=("Roboto", btn_text_size), command=lambda: self.change_length(-1))
+        self.length_decrease_btn = customtkinter.CTkButton(self, width=btn_text_size + 20, height=btn_text_size + 15, text="<", font=("Roboto", btn_text_size), command=lambda: [self.change_length(-1), self.update_word_count()])
         self.length_decrease_btn.grid(row=3, column=0)
 
-        self.length_increase_btn = customtkinter.CTkButton(self, width=btn_text_size + 20, height=btn_text_size + 15, text=">", font=("Roboto", btn_text_size), command=lambda: self.change_length(1))
+        self.length_increase_btn = customtkinter.CTkButton(self, width=btn_text_size + 20, height=btn_text_size + 15, text=">", font=("Roboto", btn_text_size), command=lambda: [self.change_length(1), self.update_word_count()])
         self.length_increase_btn.grid(row=3, column=2)
 
         self.play_btn = customtkinter.CTkButton(self, text="Play", font=("Roboto", btn_text_size), command=self.start_game)
         self.play_btn.grid(row=4, column=0, columnspan = 3, padx=10, pady=10)
 
         # word selection
-        self.word_types_lbl = customtkinter.CTkLabel(self, text="Word Types", font = ("Roboto", subtitle_size))
-        self.word_types_lbl.grid(row=5, column = 0, columnspan=3, pady=(25, 5))
-
-        # acronyms
-        self.acronyms_val = customtkinter.Variable(value=data.profile_data["wordle_basic"]["acronyms"])
-        self.acronyms_switch = customtkinter.CTkSwitch(self, switch_width=switch_size, switch_height=switch_size /2,
-                                                       text="Acronyms", font=("Roboto", popup_text_size),
-                                                       variable=self.acronyms_val, onvalue=True, offvalue=False,
-                                                       command=lambda: data.update_profile("acronyms", self.acronyms_switch.get()))
-        self.acronyms_switch.grid(row=6, column=1, sticky="nesw", pady=5)
+        self.word_count = 0
+        self.word_count_lbl = customtkinter.CTkLabel(self, text=f"Words: {self.word_count}", font = ("Roboto", subtitle_size))
+        self.word_count_lbl.grid(row=5, column = 0, columnspan=3, pady=(25, 5))
 
         # adverbs
         self.adverbs_val = customtkinter.Variable(value=data.profile_data["wordle_basic"]["adverbs"])
         self.adverbs_switch = customtkinter.CTkSwitch(self, switch_width=switch_size, switch_height=switch_size /2,
                                                        text="Adverbs", font=("Roboto", popup_text_size),
                                                        variable=self.adverbs_val, onvalue=True, offvalue=False,
-                                                       command=lambda: data.update_profile("adverbs", self.adverbs_switch.get()))
-        self.adverbs_switch.grid(row=7, column=1, sticky="nesw", pady=5)
+                                                       command=lambda: [data.update_profile("adverbs", self.adverbs_switch.get()), self.update_word_count()])
+        self.adverbs_switch.grid(row=6, column=1, sticky="nesw", pady=5)
 
         # adjectives
         self.adjectives_val = customtkinter.Variable(value=data.profile_data["wordle_basic"]["adjectives"])
         self.adjectives_switch = customtkinter.CTkSwitch(self, switch_width=switch_size, switch_height=switch_size /2,
                                                        text="Adjectives", font=("Roboto", popup_text_size),
                                                        variable=self.adjectives_val, onvalue=True, offvalue=False,
-                                                       command=lambda: data.update_profile("adjectives", self.adjectives_switch.get()))
+                                                       command=lambda: [data.update_profile("adjectives", self.adjectives_switch.get()), self.update_word_count()])
         self.adjectives_switch.grid(row=7, column=1, sticky="nesw", pady=5)
 
         # nouns
@@ -158,42 +151,40 @@ class WordleSelectionFrame(CustomFrame):
         self.nouns_switch = customtkinter.CTkSwitch(self, switch_width=switch_size, switch_height=switch_size /2,
                                                        text="Nouns", font=("Roboto", popup_text_size),
                                                        variable=self.nouns_val, onvalue=True, offvalue=False,
-                                                       command=lambda: data.update_profile("nouns", self.nouns_switch.get()))
-        self.nouns_switch.grid(row=7, column=1, sticky="nesw", pady=5)
-
-        # singulars
-        self.singulars_val = customtkinter.Variable(value=data.profile_data["wordle_basic"]["singulars"])
-        self.singulars_switch = customtkinter.CTkSwitch(self, switch_width=switch_size, switch_height=switch_size /2,
-                                                       text="Singulars", font=("Roboto", popup_text_size),
-                                                       variable=self.singulars_val, onvalue=True, offvalue=False,
-                                                       command=lambda: data.update_profile("singulars", self.singulars_switch.get()))
-        self.singulars_switch.grid(row=7, column=1, sticky="nesw", pady=5)
+                                                       command=lambda: [data.update_profile("nouns", self.nouns_switch.get()), self.update_word_count()])
+        self.nouns_switch.grid(row=8, column=1, sticky="nesw", pady=5)
 
         # verbs
         self.verbs_val = customtkinter.Variable(value=data.profile_data["wordle_basic"]["verbs"])
         self.verbs_switch = customtkinter.CTkSwitch(self, switch_width=switch_size, switch_height=switch_size /2,
                                                        text="Verbs", font=("Roboto", popup_text_size),
                                                        variable=self.verbs_val, onvalue=True, offvalue=False,
-                                                       command=lambda: data.update_profile("verbs", self.verbs_switch.get()))
-        self.verbs_switch.grid(row=7, column=1, sticky="nesw", pady=5)
+                                                       command=lambda: [data.update_profile("verbs", self.verbs_switch.get()), self.update_word_count()])
+        self.verbs_switch.grid(row=9, column=1, sticky="nesw", pady=5)
 
         # british_english
         self.british_english_val = customtkinter.Variable(value=data.profile_data["wordle_basic"]["british_english"])
         self.british_english_switch = customtkinter.CTkSwitch(self, switch_width=switch_size, switch_height=switch_size /2,
                                                        text="British English", font=("Roboto", popup_text_size),
                                                        variable=self.british_english_val, onvalue=True, offvalue=False,
-                                                       command=lambda: data.update_profile("british_english", self.british_english_switch.get()))
-        self.british_english_switch.grid(row=7, column=1, sticky="nesw", pady=5)
+                                                       command=lambda: [data.update_profile("british_english", self.british_english_switch.get()), self.update_word_count()])
+        self.british_english_switch.grid(row=10, column=1, sticky="nesw", pady=5)
 
         # american_english
         self.american_english_val = customtkinter.Variable(value=data.profile_data["wordle_basic"]["american_english"])
         self.american_english_switch = customtkinter.CTkSwitch(self, switch_width=switch_size, switch_height=switch_size /2,
                                                        text="American English", font=("Roboto", popup_text_size),
                                                        variable=self.american_english_val, onvalue=True, offvalue=False,
-                                                       command=lambda: data.update_profile("american_english", self.american_english_switch.get()))
-        self.american_english_switch.grid(row=7, column=1, sticky="nesw", pady=5)
+                                                       command=lambda: [data.update_profile("american_english", self.american_english_switch.get()), self.update_word_count()])
+        self.american_english_switch.grid(row=11, column=1, sticky="nesw", pady=5)
 
         self.update_padding(3)
+        self.update_word_count()
+
+    def update_word_count(self):
+        word_list.load_word_list(self.word_length)
+        self.word_count = len(word_list.game_word_list)
+        self.word_count_lbl.configure(text = f"{self.word_count} Words")
 
     def change_length(self, num):
         # clamp word length between 3 and 12
@@ -202,7 +193,8 @@ class WordleSelectionFrame(CustomFrame):
         self.word_length_label.configure(text=self.word_length)
 
     def start_game(self):
-        main.open_frame(GameFrame(main, word_length=self.word_length))
+        if self.word_count >= 10:
+            main.open_frame(GameFrame(main, word_length=self.word_length))
 
 
 # - GAME FRAME -
@@ -215,7 +207,8 @@ class GameFrame(CustomFrame):
         self.max_attempts = 7
         self.word_length = word_length
         self.word_inputs : list[WordInputBox] = list()
-        self.target_word = random.choice(word_list[self.word_length])
+        print(word_list.game_word_list)
+        self.target_word = random.choice(word_list.game_word_list)
         self.end_popup = None
         # endgame stats
         self.elapsed_time = 0
@@ -420,7 +413,7 @@ class WordInputBox(customtkinter.CTkFrame):
             return
         # check against list
         found = False
-        for list in word_list:
+        for list in word_list.game_word_list:
             if guess in list:
                 found = True
                 break

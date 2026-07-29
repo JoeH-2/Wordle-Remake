@@ -1,3 +1,5 @@
+import data
+
 # used on the Cambridge English Vocabulary List
 
 # format word list
@@ -13,6 +15,10 @@ with open("word_list.txt") as f:
 
         # remove line with / such as a/an
         if "/" in line:
+            continue
+
+        i = line.find(" ")
+        if line[i+1] != "(":
             continue
 
         # remove synonyms
@@ -62,6 +68,7 @@ with open("word_list.txt") as f:
         if len(word) < 3:
             continue
         # format types
+        types = types.replace(") (", "),(" )
         map = str.maketrans({
             " " : "",
             "(" : "",
@@ -73,31 +80,45 @@ with open("word_list.txt") as f:
 
 words = {
     "adjectives" : {},
+    "adverbs" : {},
     "nouns" : {},
     "verbs" : {},
-    "adverbs" : {}
+    "british_english" : {},
+    "american_english" : {}
 }
 
-# insert words into dictionary
 
+# insert words into dictionary
 for word, types in formatted_words:
     for type in types:
         match type:
-            case "abbrev":
-                try: words["acronyms"][len(word)].append(word)
-                except: words["acronyms"][len(word)] = [word]
             case "adj":
                 try: words["adjectives"][len(word)].append(word)
                 except: words["adjectives"][len(word)] = [word]
             case "adv":
                 try: words["adverbs"][len(word)].append(word)
                 except: words["adverbs"][len(word)] = [word]
-            case "noun":
+            case "n":
                 try: words["nouns"][len(word)].append(word)
                 except: words["nouns"][len(word)] = [word]
-            case "singular":
-                try: words["singulars"][len(word)].append(word)
-                except: words["singulars"][len(word)] = [word]
-            case "verb":
+            case "v":
                 try: words["verbs"][len(word)].append(word)
                 except: words["verbs"][len(word)] = [word]
+            case "BrEng":
+                try: words["british_english"][len(word)].append(word)
+                except: words["british_english"][len(word)] = [word]
+            case "AmEng":
+                try: words["american_english"][len(word)].append(word)
+                except: words["american_english"][len(word)] = [word]
+
+game_word_list = []
+
+def load_word_list(word_length):
+    global game_word_list
+    game_word_list = []
+    if data.game_data["adjectives"] and words["adjectives"].get(word_length): game_word_list.extend(words["adjectives"][word_length])
+    if data.game_data["adverbs"] and words["adverbs"].get(word_length): game_word_list.extend(words["adverbs"][word_length])
+    if data.game_data["nouns"] and words["nouns"].get(word_length): game_word_list.extend(words["nouns"][word_length])
+    if data.game_data["verbs"] and words["verbs"].get(word_length): game_word_list.extend(words["verbs"][word_length])
+    if data.game_data["british_english"] and words["british_english"].get(word_length): game_word_list.extend(words["british_english"][word_length])
+    if data.game_data["american_english"] and words["american_english"].get(word_length): game_word_list.extend(words["american_english"][word_length])

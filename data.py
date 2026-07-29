@@ -2,6 +2,34 @@ from cryptography.fernet import Fernet
 import json
 import os
 
+
+# --- Profile Data ---
+
+profile_data = None
+current_game = None
+game_data = None
+
+with open("profile.json", "r") as profile_f:
+    profile_data = json.loads(profile_f.read())
+
+def load_profile(type):
+    global game_data, current_game
+    game_data = profile_data[type]
+    current_game = type
+
+def update_profile(word_type, val):
+    game_data[word_type] = val
+    save_profile()
+
+def save_profile():
+    profile_data[current_game] = game_data
+
+    with open("profile.json", "w") as profile_f:
+        profile_f.write(json.dumps(profile_data))
+
+
+# --- Statistics Data ---
+
 data = {
     "coins" : 0,
     "wordle_basic" : {
@@ -38,30 +66,6 @@ data = {
         }
     }
 }
-
-profile_data = None
-current_game = None
-game_data = None
-
-with open("profile.json", "r") as profile_f:
-    profile_data = json.loads(profile_f.read())
-
-def load_profile(type):
-    global game_data, current_game
-    game_data = profile_data[type]
-    current_game = type
-
-def update_profile(word_type, val):
-    game_data[word_type] = val
-    print(game_data)
-    save_profile()
-
-def save_profile():
-    profile_data[current_game] = game_data
-
-    with open("profile.json", "w") as profile_f:
-        profile_f.write(json.dumps(profile_data))
-
 
 def encrypt_data():
     # save key
