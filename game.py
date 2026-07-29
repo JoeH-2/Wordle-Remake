@@ -207,7 +207,6 @@ class GameFrame(CustomFrame):
         self.max_attempts = 7
         self.word_length = word_length
         self.word_inputs : list[WordInputBox] = list()
-        print(word_list.game_word_list)
         self.target_word = random.choice(word_list.game_word_list)
         self.end_popup = None
         # endgame stats
@@ -361,13 +360,21 @@ class GameFrame(CustomFrame):
             # add overview
             self.overview.grid(row=1, columnspan=2, pady=(10, 10))
 
+            if is_win:
+                # display time if win
+                self.time_label = customtkinter.CTkLabel(self, text="Completed in " + f"{game_frame.elapsed_time}"[0:4] + "s", font=("Roboto", btn_text_size))
+                self.time_label.grid(row=2, column=0, columnspan=3, pady=(0,10))
+            else:
+                self.sad_label = customtkinter.CTkLabel(self, text="Better luck next time", font=("Roboto", btn_text_size))
+                self.sad_label.grid(row=2, column=1, pady=(0,10))
+
             # restart game button
             self.restart_btn = customtkinter.CTkButton(self, text="Play Again", command= lambda l=game_frame.word_length: game_frame.reset(l))
-            self.restart_btn.grid(row=2, column=0, padx=(50, 25), pady=(0, 25))
+            self.restart_btn.grid(row=3, column=0, padx=(50, 25), pady=(0, 25))
 
             # return to menu button
             self.menu_btn = customtkinter.CTkButton(self, text="Main Menu", command= lambda f=MenuFrame(main): main.open_frame(f))
-            self.menu_btn.grid(row=2, column=1, padx=(25, 50), pady=(0, 25))
+            self.menu_btn.grid(row=3, column=1, padx=(25, 50), pady=(0, 25))
 
             # streak display
             # streak_data = data.data["wordle_basic"][f"{self.game_frame.word_length}"]["streak"]

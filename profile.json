@@ -1,1 +1,1 @@
-{"wordle_basic": {"adverbs": true, "adjectives": true, "nouns": true, "singulars": true, "verbs": true, "british_english": true, "american_english": true}}
+{"wordle_basic": {"adverbs": false, "adjectives": true, "nouns": false, "singulars": true, "verbs": false, "british_english": false, "american_english": false}}
