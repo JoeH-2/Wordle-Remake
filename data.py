@@ -35,7 +35,9 @@ data = {
     "wordle_basic" : {
         # word length
         3 : {
-            "streak" : 0
+            "streak" : 0,
+            "high_streak" : 0,
+            "time" : None,
         },
         4 : {
             "streak" : 0

@@ -305,15 +305,27 @@ class GameFrame(CustomFrame):
         main.unbind("<Right>")
         main.unbind("<BackSpace>")
 
-        # update data
+        # load data
         data.load_data()
-        if is_win:
-            data.data["wordle_basic"][f"{self.word_length}"]["streak"] += 1
-        else:
-            data.data["wordle_basic"][f"{self.word_length}"]["streak"] = 0
+        current_game_data = data.data["wordle_basic"][f"{self.word_length}"]
 
+        # update streak data
+        if is_win:
+            current_game_data["streak"] += 1
+        else:
+            current_game_data["streak"] = 0
+
+        # update highest streak data
+        if current_game_data["streak"] > current_game_data["high_streak"]:
+            current_game_data["high_streak"] = current_game_data["streak"]
+
+        # calc time
         end_time = time.time()
         self.elapsed_time = end_time - self.start_time
+
+        # update time data
+        if current_game_data["time"] == None or self.elapsed_time < current_game_data["time"]:
+            current_game_data["time"] = self.elapsed_time
 
         # show popup
         self.end_popup = main.show_popup(self.EndGamePopup(main, self, is_win))
@@ -360,13 +372,27 @@ class GameFrame(CustomFrame):
             # add overview
             self.overview.grid(row=1, columnspan=2, pady=(10, 10))
 
+            self.stats_frame = customtkinter.CTkFrame(self)
+            self.stats_frame.grid(row=2, column=0, columnspan=3, pady=(0,10))
+
             if is_win:
                 # display time if win
-                self.time_label = customtkinter.CTkLabel(self, text="Completed in " + f"{game_frame.elapsed_time}"[0:4] + "s", font=("Roboto", btn_text_size))
-                self.time_label.grid(row=2, column=0, columnspan=3, pady=(0,10))
+                self.deci_index = str(game_frame.elapsed_time).find(".")
+                self.time_label = customtkinter.CTkLabel(self.stats_frame, text="Completed in " + f"{game_frame.elapsed_time}"[0:self.deci_index+4] + "s", font=("Roboto", btn_text_size))
+                self.time_label.grid(row=0, column=0, pady=(0,5))
+
+                # streak display
+                streak_data = data.data["wordle_basic"][f"{self.game_frame.word_length}"]["streak"]
+                self.streak_lbl = customtkinter.CTkLabel(self.stats_frame, text= f"Streak x{streak_data}", font=customtkinter.CTkFont("Roboto", btn_text_size))
+                self.streak_lbl.grid(row=1, column=0, pady=(0, 5))
+                
+                # highest streak display
+                high_streak_data = data.data["wordle_basic"][f"{self.game_frame.word_length}"]["high_streak"]
+                self.high_streak_lbl = customtkinter.CTkLabel(self.stats_frame, text= f"Longest Streak x{high_streak_data}", font=customtkinter.CTkFont("Roboto", btn_text_size))
+                self.high_streak_lbl.grid(row=2, column=0, pady=(0, 5))
             else:
-                self.sad_label = customtkinter.CTkLabel(self, text="Better luck next time", font=("Roboto", btn_text_size))
-                self.sad_label.grid(row=2, column=1, pady=(0,10))
+                self.sad_label = customtkinter.CTkLabel(self.stats_frame, text="Better luck next time", font=("Roboto", btn_text_size))
+                self.sad_label.grid(row=0, column=1, pady=(0,5))
 
             # restart game button
             self.restart_btn = customtkinter.CTkButton(self, text="Play Again", command= lambda l=game_frame.word_length: game_frame.reset(l))
@@ -375,11 +401,6 @@ class GameFrame(CustomFrame):
             # return to menu button
             self.menu_btn = customtkinter.CTkButton(self, text="Main Menu", command= lambda f=MenuFrame(main): main.open_frame(f))
             self.menu_btn.grid(row=3, column=1, padx=(25, 50), pady=(0, 25))
-
-            # streak display
-            # streak_data = data.data["wordle_basic"][f"{self.game_frame.word_length}"]["streak"]
-            # self.streak_lbl = customtkinter.CTkLabel(self, text= f"Current Streak: x{streak_data}", font=customtkinter.CTkFont("Roboto", popup_text_size))
-            # self.streak_lbl.grid(row=0, column=0, columnspan=2, padx=(0, 0), pady=(20, 12))
     
 
 class WordInputBox(customtkinter.CTkFrame):
