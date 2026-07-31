@@ -1,4 +1,5 @@
 from cryptography.fernet import Fernet
+import word_list_generator as word_list
 import json
 import os
 
@@ -30,44 +31,19 @@ def save_profile():
 
 # --- Statistics Data ---
 
+# build data
+
 data = {
     "coins" : 0,
-    "wordle_basic" : {
-        # word length
-        3 : {
+    "wordle_basic" : {}
+}
+
+for i in range(3, 13):
+    data["wordle_basic"][i] = {
             "streak" : 0,
             "high_streak" : 0,
-            "time" : None,
-        },
-        4 : {
-            "streak" : 0
-        },
-        5 : {
-            "streak" : 0
-        },
-        6 : {
-            "streak" : 0
-        },
-        7 : {
-            "streak" : 0
-        },
-        8 : {
-            "streak" : 0
-        },
-        9 : {
-            "streak" : 0
-        },
-        10 : {
-            "streak" : 0
-        },
-        11 : {
-            "streak" : 0
-        },
-        12 : {
-            "streak" : 0
-        }
-    }
-}
+            "time" : None
+            }
 
 def encrypt_data():
     # save key
