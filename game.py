@@ -242,7 +242,6 @@ class GameFrame(CustomFrame):
         new_word_input.grid(row=len(self.word_inputs) + 2, column=0)
 
     # state checks
-    
     def game_check(self, word):
         self.attempts += 1
         # guessed correctly
@@ -307,25 +306,27 @@ class GameFrame(CustomFrame):
 
         # load data
         data.load_data()
-        current_game_data = data.data["wordle_basic"][f"{self.word_length}"]
+        self.current_game_data = data.data["wordle_basic"][f"{self.word_length}"]
 
         # update streak data
         if is_win:
-            current_game_data["streak"] += 1
+            self.current_game_data["streak"] += 1
         else:
-            current_game_data["streak"] = 0
+            self.current_game_data["streak"] = 0
 
         # update highest streak data
-        if current_game_data["streak"] > current_game_data["high_streak"]:
-            current_game_data["high_streak"] = current_game_data["streak"]
+        if self.current_game_data["streak"] > self.current_game_data["high_streak"]:
+            self.current_game_data["high_streak"] = self.current_game_data["streak"]
 
         # calc time
         end_time = time.time()
         self.elapsed_time = end_time - self.start_time
 
         # update time data
-        if current_game_data["time"] == None or self.elapsed_time < current_game_data["time"]:
-            current_game_data["time"] = self.elapsed_time
+        if self.current_game_data["time"] == None or self.elapsed_time < self.current_game_data["time"]:
+            index = int(str(self.elapsed_time).find("."))
+            deci_time = float(str(self.elapsed_time)[0:index+4])
+            self.current_game_data["time"] = deci_time
 
         # show popup
         self.end_popup = main.show_popup(self.EndGamePopup(main, self, is_win))
@@ -375,24 +376,35 @@ class GameFrame(CustomFrame):
             self.stats_frame = customtkinter.CTkFrame(self)
             self.stats_frame.grid(row=2, column=0, columnspan=3, pady=(0,10))
 
+            
+            # time display
+            # title
+            title_font = customtkinter.CTkFont("Roboto", btn_text_size, underline=True)
+            self.time_title_lbl = customtkinter.CTkLabel(self.stats_frame, text="Time", font=title_font)
+            self.time_title_lbl.grid(row=0, column=0, pady=(5,1))
             if is_win:
-                # display time if win
+                # current time
                 self.deci_index = str(game_frame.elapsed_time).find(".")
-                self.time_label = customtkinter.CTkLabel(self.stats_frame, text="Completed in " + f"{game_frame.elapsed_time}"[0:self.deci_index+4] + "s", font=("Roboto", btn_text_size))
-                self.time_label.grid(row=0, column=0, pady=(0,5))
+                self.time_lbl = customtkinter.CTkLabel(self.stats_frame, text="Current: " + f"{game_frame.elapsed_time}"[0:self.deci_index+4] + "s", font=("Roboto", btn_text_size))
+                self.time_lbl.grid(row=1, column=0, padx=10, pady=(0,1))
+            # best time
+            self.best_time = game_frame.current_game_data["time"]
+            self.best_time_lbl = customtkinter.CTkLabel(self.stats_frame, text=f"Best: {self.best_time}s", font=("Roboto", btn_text_size))
+            self.best_time_lbl.grid(row=2, column=0, pady=(0,5))
 
-                # streak display
-                streak_data = data.data["wordle_basic"][f"{self.game_frame.word_length}"]["streak"]
-                self.streak_lbl = customtkinter.CTkLabel(self.stats_frame, text= f"Streak x{streak_data}", font=customtkinter.CTkFont("Roboto", btn_text_size))
-                self.streak_lbl.grid(row=1, column=0, pady=(0, 5))
-                
-                # highest streak display
-                high_streak_data = data.data["wordle_basic"][f"{self.game_frame.word_length}"]["high_streak"]
-                self.high_streak_lbl = customtkinter.CTkLabel(self.stats_frame, text= f"Longest Streak x{high_streak_data}", font=customtkinter.CTkFont("Roboto", btn_text_size))
-                self.high_streak_lbl.grid(row=2, column=0, pady=(0, 5))
-            else:
-                self.sad_label = customtkinter.CTkLabel(self.stats_frame, text="Better luck next time", font=("Roboto", btn_text_size))
-                self.sad_label.grid(row=0, column=1, pady=(0,5))
+            # streak display
+            # streak title
+            self.streak_title_lbl = customtkinter.CTkLabel(self.stats_frame, text="Streak", font=title_font)
+            self.streak_title_lbl.grid(row=3, column=0, pady=(0,1))
+            if is_win:
+                # current streak
+                streak_data = game_frame.current_game_data["streak"]
+                self.streak_lbl = customtkinter.CTkLabel(self.stats_frame, text= f"Current: x{streak_data}", font=customtkinter.CTkFont("Roboto", btn_text_size))
+                self.streak_lbl.grid(row=4, column=0, pady=(0, 1))
+            # highest streak display
+            high_streak_data = game_frame.current_game_data["high_streak"]
+            self.high_streak_lbl = customtkinter.CTkLabel(self.stats_frame, text= f"Best: x{high_streak_data}", font=customtkinter.CTkFont("Roboto", btn_text_size))
+            self.high_streak_lbl.grid(row=5, column=0, pady=(0, 5))
 
             # restart game button
             self.restart_btn = customtkinter.CTkButton(self, text="Play Again", command= lambda l=game_frame.word_length: game_frame.reset(l))
